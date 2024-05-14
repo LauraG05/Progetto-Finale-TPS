@@ -8,6 +8,14 @@ const express = require("express");
 const { Z_ASCII } = require("zlib");
 const app = express();
 const connection = mysql.createConnection(conf);
+const http = require ("http");
+const server = http.createServer(app);
+const path = require ("path");
+app.use("/", express.static(path.join(__dirname, "public")));
+
+server.listen(3040, () => {
+  console.log("---> server running on port 3040");
+});
 
 const executeQuery = (sql) => {
   return new Promise((resolve, reject) => {
@@ -39,21 +47,58 @@ const leggiFile = () => {
 module.exports = leggiFile;
 
 app.get("/ottieniNomiProf", (req, resp) => {
-  const sql = "SELECT Nome_Docente FROM Docente";
+  const sql = "SELECT Cognome_Docente FROM Docente";
   executeQuery(sql).then((results) => {
-    const elencoProf = results.map((row) => row.Nome_Docente);
+    const elencoProf = results.map((row) => row.Cognome_Docente);
     resp.json({ result: "ok", prof: elencoProf });
   });
 });
 
-app.post("/restitusciStatoProf", (res, resp) => {
-  const nome = res.body.nome;
-  const cognome = res.body.cognome;
-  if (nome && cognome !== "") {
-    resp.json({
-      result: "ok " + cognome + " " + nome,
-    });
+app.post("/restitusciStatoProf", (req, resp) => {
+  const cognome = req.body.cognome;
+
+  let giorniSettimana = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
+  let dataCorrente = new Date();
+  let indiceGiorno = dataCorrente.getDay();
+  let nomeGiorno = giorniSettimana[indiceGiorno];
+
+  let ora = req.body.ora;
+  let dataCorrente1 = new Date();
+  let oraCorrente = dataCorrente1.getHours();
+  let minutiCorrenti = dataCorrente1.getMinutes();
+  minutiCorrenti = minutiCorrenti < 10 ? "0" + minutiCorrenti : minutiCorrenti;
+  let oraFormattata = parseFloat(oraCorrente + "." + minutiCorrenti); 
+  
+  if (oraFormattata >= 8.00 && oraFormattata <= 8.55) {
+      ora = "Prima";
+  } else if (oraFormattata >= 8.55 && oraFormattata <= 9.50) {
+      ora = "Seconda";
+  } else if (oraFormattata >= 9.50 && oraFormattata <= 10.40) {
+      ora = "Terza";
+  } else if (oraFormattata >= 10.40 && oraFormattata <= 11.45) {
+      ora = "Quarta";
+  } else if (oraFormattata >= 11.45 && oraFormattata <= 12.35) {
+      ora = "Quinta";
+  } else if (oraFormattata >= 12.35 && oraFormattata <= 13.40) {
+      ora = "Sesta";
+  } else if (oraFormattata >= 13.40 && oraFormattata <= 14.30) {
+      ora = "Settima";
   }
+  
+  const sql = "SELECT Nome_Classe FROM Classe " +
+              "INNER JOIN Ora ON Ora.ID_Classe = Classe.ID_Classe " +
+              "INNER JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno " +
+              "INNER JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente " +
+              "WHERE Docente.Cognome_Docente = ? AND Ora.Nome_Ora = ? AND Giorno.Nome_Giorno = ?";
+
+  executeQuery(sql, [cognome, ora, nomeGiorno]).then((response) => {
+    resp.json({
+      result: response
+    });
+  }).catch((error) => {
+    console.error("Errore nell'esecuzione della query:", error);
+    resp.status(500).json({ error: "Errore nell'esecuzione della query" });
+  });
 });
 
 /*
