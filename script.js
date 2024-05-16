@@ -9,6 +9,10 @@ const { Z_ASCII } = require("zlib");
 const app = express();
 const connection = mysql.createConnection(conf);
 const http = require ("http");
+
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
 const server = http.createServer(app);
 const path = require ("path");
 app.use("/", express.static(path.join(__dirname, "public")));
@@ -54,15 +58,15 @@ app.get("/ottieniNomiProf", (req, resp) => {
   });
 });
 
-app.post("/restitusciStatoProf", async (req, resp) => {
-  const cognome = req.body;
+app.post("/restituisciStatoProf", async (req, resp) => {
+  const cognome = req.body.cognome;
   console.log(cognome);
   let giorniSettimana = ["Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
   let dataCorrente = new Date();
   let indiceGiorno = dataCorrente.getDay();
   let nomeGiorno = giorniSettimana[indiceGiorno];
 
-  let ora = req.body.ora;
+  let ora = req.body.ora; // nella fetch non gliela metto come parametro????
   let dataCorrente1 = new Date();
   let oraCorrente = dataCorrente1.getHours();
   let minutiCorrenti = dataCorrente1.getMinutes();
@@ -85,11 +89,11 @@ app.post("/restitusciStatoProf", async (req, resp) => {
       ora = "Settima";
   }
   
-  const sql = "SELECT Nome_Classe FROM Classe " +
-              "INNER JOIN Ora ON Ora.ID_Classe = Classe.ID_Classe " +
-              "INNER JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno " +
-              "INNER JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente " +
-              "WHERE Docente.Cognome_Docente = ? AND Ora.Nome_Ora = ? AND Giorno.Nome_Giorno = ?";
+  const sql = `SELECT Nome_Classe FROM Classe 
+              INNER JOIN Ora ON Ora.ID_Classe = Classe.ID_Classe 
+              INNER JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno 
+              INNER JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente 
+              WHERE Docente.Cognome_Docente = ? AND Ora.Nome_Ora = ? AND Giorno.Nome_Giorno = ?`;
 
   executeQuery(sql, [cognome, ora, nomeGiorno]).then((response) => {
     resp.json({
@@ -100,6 +104,35 @@ app.post("/restitusciStatoProf", async (req, resp) => {
     resp.status(500).json({ error: "Errore nell'esecuzione della query" });
   });
 });
+
+/*
+app.post("/ottieniOrario", async (req, resp) => {
+  const cognome = req.body.cognome;
+  let giorniSettimana = ["Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
+  let dataCorrente = new Date();
+  let indiceGiorno = dataCorrente.getDay();
+  let nomeGiorno = giorniSettimana[indiceGiorno];
+
+  const sql = `
+    SELECT Nome_Classe, Ora.Nome_Ora
+    FROM Classe 
+    INNER JOIN Ora ON Ora.ID_Classe = Classe.ID_Classe 
+    INNER JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno 
+    INNER JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente 
+    WHERE Docente.Cognome_Docente = ? AND Giorno.Nome_Giorno = ?
+    ORDER BY FIELD(Ora.Nome_Ora, 'prima', 'seconda', 'terza', 'quarta', 'quinta', 'sesta', 'settima', 'ottava', 'nona', 'decima')`; 
+
+  executeQuery(sql, [cognome, nomeGiorno]).then((response) => {
+    resp.json({
+      result: response
+    });
+  }).catch((error) => {
+    console.error("Errore nell'esecuzione della query:", error);
+    resp.status(500).json({ error: "Errore nell'esecuzione della query" });
+  });
+});
+*/
+
 
 /*
           fetch("/ottieniNomiProf")

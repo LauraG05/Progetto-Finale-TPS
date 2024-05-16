@@ -11,7 +11,7 @@ const render = (div) => {
     let nominativo = [];
     prendiNomiProf().then(response => {
          nominativo = response;
-        // console.log(nominativo);
+         console.log(nominativo);
   
   const template = `
   <div style="padding-top: 10px; padding-left: 20px;">
@@ -140,4 +140,18 @@ const restituisciStatoProf = async (cognomeInput) => {
     const data = await response.json(); 
     return data;
 };
+
+/*
+const ottieniOrario = async (cognomeInput) => {
+    console.log(cognomeInput);
+    const response = await fetch("/ottieniOrario", {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+        },
+        body: JSON.stringify({ cognome: cognomeInput }),
+    });
+    const data = await response.json(); 
+    return data;
+};*/
 
