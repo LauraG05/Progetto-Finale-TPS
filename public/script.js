@@ -28,20 +28,20 @@ const render = (div) => {
   const buttonsProf = document.querySelectorAll(".btn-Prof");
 
   buttonsProf.forEach((button, index) => {
-    button.onclick = () => {
+    button.onclick = async () => {
       let oraCorrente = new Date();
       const currentHour = oraCorrente.getHours();
       const currentMinute = oraCorrente.getMinutes();
 
-      showModal1(nominativo[index], currentHour, currentMinute);
+      await showModal1(nominativo[index], currentHour, currentMinute);
     };
   });
   filtraRisultati();
 });
 };
 
-const showModal1 = (nominativo, ora, minuto) => {
-   restituisciStatoProf(nominativo).then((response) => {
+const showModal1 = async (nominativo, ora, minuto) => {
+   await restituisciStatoProf(nominativo).then((response) => {
     console.log(response);
     modal.style.display = "block";
     modal.querySelector("h5").innerText = `${nominativo}`
@@ -117,6 +117,7 @@ orarioBut.onclick = () => {
 render(divElenco);
 
 //////////////////////////////// fetch //////////////////////////
+
 function prendiNomiProf () {
     return new Promise ((resolve, reject) => {
         fetch("/ottieniNomiProf")
@@ -127,20 +128,16 @@ function prendiNomiProf () {
     })
 }
 
-const restituisciStatoProf = (cognomeInput) => {
-    return new Promise ((resolve, reject) => {
-fetch("/restitusciStatoProf", {
-  method: "POST",
-  headers: {
-    "content-type": "application/json",
-  },
-  body: JSON.stringify({
-    cognome: cognomeInput,
-  }),
-})
-  .then((resp) => resp.json())
-  .then((resp) =>{
-    resolve(resp.prof)
-});
-});
-}
+const restituisciStatoProf = async (cognomeInput) => {
+    console.log(cognomeInput);
+    const response = await fetch("/restituisciStatoProf", {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+        },
+        body: JSON.stringify({ cognome: cognomeInput }),
+    });
+    const data = await response.json(); 
+    return data;
+};
+

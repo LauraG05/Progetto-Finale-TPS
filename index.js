@@ -94,7 +94,7 @@ leggiFile(csvFilePath).then(async (data) => {
       "SELECT ID_Docente FROM Docente WHERE Cognome_Docente = ? AND Nome_Docente = ?";
     const rsp = await executeQuery(idDocente, [nominativo[0], nominativo[1]]);
     if (rsp.length > 0) {
-      let giorni = ["Martedì", "Mercoledì", "Giovedì", "Venerdì"];
+      let giorni = ["Martedi", "Mercoledi", "Giovedi", "Venerdi"];
       let giorno = giorni[0];
       for (let index = 0; index < docente.ore.length; index++) {
         const classe = docente.ore[index];

@@ -54,10 +54,10 @@ app.get("/ottieniNomiProf", (req, resp) => {
   });
 });
 
-app.post("/restitusciStatoProf", (req, resp) => {
-  const cognome = req.body.cognome;
-
-  let giorniSettimana = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
+app.post("/restitusciStatoProf", async (req, resp) => {
+  const cognome = req.body;
+  console.log(cognome);
+  let giorniSettimana = ["Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
   let dataCorrente = new Date();
   let indiceGiorno = dataCorrente.getDay();
   let nomeGiorno = giorniSettimana[indiceGiorno];
