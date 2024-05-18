@@ -11,7 +11,7 @@ const render = (div) => {
     let nominativo = [];
     prendiNomiProf().then(response => {
          nominativo = response;
-         console.log(nominativo);
+       //  console.log(nominativo.length);
   
   const template = `
   <div style="padding-top: 10px; padding-left: 20px;">
@@ -20,6 +20,7 @@ const render = (div) => {
 
   let html = "";
   for (let i = 0; i < nominativo.length; i++) {
+    console.log(nominativo.lenght);
     let row = template.replace("%NOME", nominativo[i]);
     html += row;
   }
@@ -42,6 +43,7 @@ const render = (div) => {
 
 const showModal1 = async (nominativo, ora, minuto) => {
    await restituisciStatoProf(nominativo).then((response) => {
+    console.log("response secondo servizio ")
     console.log(response);
     modal.style.display = "block";
     modal.querySelector("h5").innerText = `${nominativo}`

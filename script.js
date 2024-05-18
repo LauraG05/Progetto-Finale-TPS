@@ -20,7 +20,7 @@ app.use("/", express.static(path.join(__dirname, "public")));
 server.listen(3040, () => {
   console.log("---> server running on port 3040");
 });
-
+/*
 const executeQuery = (sql) => {
   return new Promise((resolve, reject) => {
     connection.query(sql, function (err, result) {
@@ -33,7 +33,7 @@ const executeQuery = (sql) => {
     });
   });
 };
-
+*/
 const csvFilePath = "EXP_PLANNING.csv";
 
 const leggiFile = () => {
@@ -66,7 +66,7 @@ app.post("/restituisciStatoProf", async (req, resp) => {
   let indiceGiorno = dataCorrente.getDay();
   let nomeGiorno = giorniSettimana[indiceGiorno];
 
-  let ora = req.body.ora; // nella fetch non gliela metto come parametro????
+  let ora = req.body.ora; 
   let dataCorrente1 = new Date();
   let oraCorrente = dataCorrente1.getHours();
   let minutiCorrenti = dataCorrente1.getMinutes();
@@ -88,14 +88,18 @@ app.post("/restituisciStatoProf", async (req, resp) => {
   } else if (oraFormattata >= 13.40 && oraFormattata <= 14.30) {
       ora = "Settima";
   }
-  
+  /*
   const sql = `SELECT Nome_Classe FROM Classe 
               INNER JOIN Ora ON Ora.ID_Classe = Classe.ID_Classe 
               INNER JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno 
               INNER JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente 
               WHERE Docente.Cognome_Docente = ? AND Ora.Nome_Ora = ? AND Giorno.Nome_Giorno = ?`;
 
-  executeQuery(sql, [cognome, ora, nomeGiorno]).then((response) => {
+  executeQuery(sql, [cognome, ora, nomeGiorno]).then((response) => {*/
+
+  const sql = `SELECT Nome_Ora FROM Ora`;
+  // tolta query difettosa, vediamo errore salvataggio db
+  executeQuery(sql).then((response) => {
     resp.json({
       result: response
     });
