@@ -42,13 +42,13 @@ const render = (div) => {
 };
 
 const showModal1 = async (nominativo, ora, minuto) => {
-   await restituisciStatoProf(nominativo).then((response) => {
-    console.log("response secondo servizio ")
-    console.log(response);
-    modal.style.display = "block";
-    modal.querySelector("h5").innerText = `${nominativo}`
-    modal.querySelector("p").innerText = `Locazione di ${nominativo} alle ${ora}.${minuto}\n\nClasse: ${""}\nFino alle: ${""}`;
-  });
+  await restituisciStatoProf().then((response) => {
+   console.log("response secondo servizio");
+   console.log(response); // array vuoto o undefined
+   modal.style.display = "block";
+   modal.querySelector("h5").innerText = `${"nom"}`;
+   modal.querySelector("p").innerText = `Locazione di ${"nom"} alle ${ora}.${minuto}\n\nClasse: ${"miao"}\nFino alle: ${""}`;
+ });
 }
 
 const filtraRisultati = () => {
@@ -70,15 +70,7 @@ window.onclick = (event) => {
   }
 }
 
-/*
-let nominativo = [];
-console.log(elencoProfC.length);
-for (let i = 0; i < elencoProfC.length; i++) {
-  nominativo.push(elencoProfN[i] + " " + elencoProfC[i]);
-}
-nominativo.sort(); //ordine alfabetico
-console.log(nominativo);
-*/
+
 const showModal2 = (elencoOre, elencoClassi) => {
   modal.querySelector(".infos").setAttribute("hidden", true)
   modal.querySelector(".tabella").removeAttribute("hidden");
@@ -129,7 +121,18 @@ function prendiNomiProf () {
         });  
     })
 }
+function restituisciStatoProf () {
+  return new Promise ((resolve, reject) => {
+      fetch("/restituisciStatoProf")
+      .then((resp) => resp.json())
+      .then((data) => {
+        resolve(data);
+        console.log("Risultato della query:", data.result); // corretto
+      });  
+  })
+}
 
+/*
 const restituisciStatoProf = async (cognomeInput) => {
     console.log(cognomeInput);
     const response = await fetch("/restituisciStatoProf", {
@@ -141,7 +144,7 @@ const restituisciStatoProf = async (cognomeInput) => {
     });
     const data = await response.json(); 
     return data;
-};
+};*/
 
 /*
 const ottieniOrario = async (cognomeInput) => {

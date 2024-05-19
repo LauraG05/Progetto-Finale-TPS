@@ -89,43 +89,47 @@ leggiFile(csvFilePath).then(async (data) => {
 
   const svuota3 = "DELETE FROM  Ora";
   await executeQuery(svuota3);
+
+  const giorni = ["Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi"];
+  const oreNomi = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+
   for (const docente of definitivo) {
     const nominativo = docente.docente.split("/");
-    // restituzione id del docente con nome e cognome inserito
-    // DOCENTI
-    const idDocente =
-      "SELECT ID_Docente FROM Docente WHERE Cognome_Docente = ? AND Nome_Docente = ?";
+    const idDocente = "SELECT ID_Docente FROM Docente WHERE Cognome_Docente = ? AND Nome_Docente = ?";
     const rsp = await executeQuery(idDocente, [nominativo[0], nominativo[1]]);
 
-    // CLASSI
     if (rsp.length > 0) { // se ci sono docenti 
-      let giorni = ["Lunedi","Martedi", "Mercoledi", "Giovedi", "Venerdi"];
-      let giorno = giorni[0];
+      const idDocenteValue = rsp[0].ID_Docente; // trova id docente
 
-      for (let index = 0; index < docente.ore.length; index++) { // ripetiamo giorni e ore per ogni singolo docente
-        const classe = docente.ore[index];
-        const idClasse = "SELECT ID_Classe FROM Classe WHERE Nome_Classe = ?";
-        const idClasseRs = await executeQuery(idClasse, [classe]);
-
-        // GIORNI
-        // inserimento giorni
-        if (index % 7 == 0) {
-          giorno = giorni[index / 7]; // nomi ai giorni
-        }
+      for (let giornoIndex = 0; giornoIndex < giorni.length; giornoIndex++) {
+        const giorno = giorni[giornoIndex];
         const idGiorno = "SELECT ID_Giorno FROM Giorno WHERE Nome_Giorno = ?";
         const idGiornoRs = await executeQuery(idGiorno, [giorno]);
 
-        // ORE
-        const query = `INSERT INTO Ora (Nome_Ora, ID_Docente, ID_Giorno, ID_Classe) VALUES (?, ?, ?, ?)`;
-        console.log("index");
-       if (rsp.length > 0 && idGiornoRs.length > 0 && idClasseRs.length > 0) { // se tutte le tabelle sono piene (doc., giorno, classe)
-          await executeQuery(query, [
-            index,
-            rsp[0].ID_Docente,
-            idGiornoRs[0].ID_Giorno,
-            idClasseRs[0].ID_Classe,
-          ]);
-       }
+        if (idGiornoRs.length > 0) {
+          const idGiornoValue = idGiornoRs[0].ID_Giorno; // trova id giorno
+ 
+          for (let oraIndex = 0; oraIndex < oreNomi.length; oraIndex++) {
+            const ora = oreNomi[oraIndex];
+            const classe = docente.ore[giornoIndex * 7 + oraIndex]; 
+            // giornoIndex * 7 dà l'inizio del blocco di 7 ore per quel giorno
+            // oraIndex scorre attraverso le 7 ore del giorno
+            const idClasse = "SELECT ID_Classe FROM Classe WHERE Nome_Classe = ?";
+            const idClasseRs = await executeQuery(idClasse, [classe]);
+
+            if (idClasseRs.length > 0) {
+              const idClasseValue = idClasseRs[0].ID_Classe;
+
+              const query = `INSERT INTO Ora (Nome_Ora, ID_Docente, ID_Giorno, ID_Classe) VALUES (?, ?, ?, ?)`;
+              await executeQuery(query, [
+                ora,
+                idDocenteValue,
+                idGiornoValue,
+                idClasseValue,
+              ]);
+            }
+          }
+        }
       }
     }
   }
