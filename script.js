@@ -90,6 +90,18 @@ if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorren
   ora="???"
 }
 
+/*
+  const sql = `SELECT Classe.Nome_Classe
+  FROM Classe
+  JOIN Ora ON Classe.ID_Classe = Ora.ID_Classe
+  JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente
+  JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno
+  WHERE Ora.Nome_Ora = ?
+    AND Docente.ID_Docente LIKE ?
+    AND Giorno.Nome_Giorno = ?;
+  `;
+ */
+  
   const sql = `SELECT Classe.Nome_Classe
   FROM Classe
   JOIN Ora ON Classe.ID_Classe = Ora.ID_Classe
@@ -99,8 +111,9 @@ if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorren
     AND Docente.Cognome_Docente LIKE ?
     AND Giorno.Nome_Giorno = ?;
   `;
- 
-  console.log("Parametri query:", {ora, cognome: "%" + cognome + "%", nomeGiorno });
+  
+
+ // console.log("Parametri query:", {ora, cognome: "%" + cognome + "%", nomeGiorno });
   executeQuery(sql, [ora, "%"+cognome+"%", nomeGiorno]).then((response) => {
     resp.json({
       result: response,
@@ -110,3 +123,38 @@ if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorren
     resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
   });
 });
+
+app.post("/ottieniOrarioTot", async (req, resp) => {
+  const cognome = req.body.cognome;
+  console.log(cognome);
+  let giorniSettimana = ["Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
+  let dataCorrente = new Date();
+  let indiceGiorno = dataCorrente.getDay();
+  let nomeGiorno = giorniSettimana[indiceGiorno];
+
+  
+  const sql = `SELECT Classe.Nome_Classe
+  FROM Classe
+  JOIN Ora ON Classe.ID_Classe = Ora.ID_Classe
+  JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente
+  JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno
+  WHERE Ora.Nome_Ora = ?
+    AND Docente.Cognome_Docente LIKE ?
+    AND Giorno.Nome_Giorno = ?;
+  `;
+  
+  const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+
+ elencoOre.forEach((ore) => {
+  console.log("Parametri query:", {ore, cognome: "%" + cognome + "%", nomeGiorno });
+  executeQuery(sql, [elencoOre[i], "%"+cognome+"%", nomeGiorno]).then((response) => {
+    resp.json({
+      result: response,
+    });
+  }).catch((error) => {
+    console.error("Errore nell'esecuzione della query:", error);
+    resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
+  });
+ })
+});
+

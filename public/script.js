@@ -12,8 +12,8 @@ const calcolaOraAttuale = () => {
   let oraCorrente = dataCorrente1.getHours();
   let minutiCorrenti = dataCorrente1.getMinutes();
   minutiCorrenti = minutiCorrenti < 10 ? "0" + minutiCorrenti : minutiCorrenti;
-  oraCorrente=9;
-  minutiCorrenti=20;
+console.log(oraCorrente);
+ console.log(minutiCorrenti)
   // minuti separati
   if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorrente === 8 && minutiCorrenti < 55))) {
     ora = "Prima";
@@ -42,7 +42,7 @@ const render = (div) => {
        //  console.log(nominativo.length);
   
   const template = `
-  <div style="padding-top: 10px; padding-left: 20px;">
+  <div class="AOO" style="padding-top: 10px; padding-left: 20px;">
     <button type="button" class="btn btn-Prof">%NOME</button>
   </div>`;
 
@@ -68,7 +68,6 @@ render2(document.getElementById("dinamico"));
 };  
 
 
-
 const showModal1 = async (nominativo, ora) => {
   modal.querySelector(".infos").removeAttribute("hidden")
   modal.querySelector(".tabella").setAttribute("hidden", true)
@@ -77,41 +76,110 @@ const showModal1 = async (nominativo, ora) => {
   console.log(response);
   modal.style.display = "block";
   modal.querySelector("h5").innerText = `${nominativo}`;
-  modal.querySelector("p").innerText = `Locazione di ${nominativo} alla ${ora} ora \nClasse: ${response.result[0]?.Nome_Classe || "N/A"}`;
+  // senza "?" da undefined in Nome_Classe ???
+  modal.querySelector("p").innerText = `Locazione di ${nominativo} alla ${ora} ora \nSi trova in: ${response.result[0]?.Nome_Classe || "nessuna classe"}`;
 };
 
 const filtraRisultati = () => {
   const valoreFiltro = document.getElementById("CERCAPROF").value.toLowerCase();
   const buttonsProf = document.querySelectorAll(".btn-Prof");
-  buttonsProf.forEach((button) => {
-    const buttonsProfContenuto = button.textContent.toLowerCase();
-    if (buttonsProfContenuto.includes(valoreFiltro)) {
-      button.style.display = "inline-block";
+  const divDaEliminare = document.querySelectorAll(".AOO");
+
+  divDaEliminare.forEach((div) => {
+    let showDiv = false;
+    const buttonsInDiv = div.querySelectorAll(".btn-Prof");
+
+    buttonsInDiv.forEach((button) => {
+      const buttonsProfContenuto = button.textContent.toLowerCase();
+      if (buttonsProfContenuto.includes(valoreFiltro)) {
+        button.style.display = "inline-block";
+        showDiv = true; 
+      } else {
+        button.style.display = "none";
+      }
+    });
+
+    if (showDiv) {
+      div.removeAttribute("hidden");
     } else {
-      button.style.display = "none"; // se lettere non corrispondono
+      div.setAttribute("hidden", true);
     }
   });
 }
+
 
 window.onclick = (event) => {
   if (event.target == modal) {
     modal.style.display = "none";
   }
 }
+/*
+const render2 = async (div) => {
+  console.log("AAAAAAA");
+  const nominativo = await prendiNomiProf();
+  const response = await restituisciStatoProf(nominativo); // cambiare servizio!!
+  console.log(response);
+  
+let aperto = `<table class="table table-striped">
+<thead>
+  <tr>
+    <th scope="col">Ora</th>
+    <th scope="col">Classe</th>
+  </tr>
+</thead>
+<tbody>`;
+
+const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+
+  let html = aperto;
+  let temp = `<tr> <td>%ORA</td><td>%CLASSE</td> </tr>`;
+  let chiuso = `</tbody> </table>`
+  for (let i = 0; i < elencoOre.length; i++) {
+    let row = temp.replace("%ORA", elencoOre[i]);
+    row = row.replace("%CLASSE", response.result[0]?.Nome_Classe); 
+    console.log(elencoOre[i]);
+    console.log(response.result[0]?.Nome_Classe);
+    html += row;
+  }
+  html += chiuso;
+  div.innerHTML = html;
+
+  const buttonsOrario = document.querySelectorAll(".ORARIOBUTTON");
+  buttonsOrario.forEach((but) => {
+    but.onclick = () => {
+      showModal2();
+    };
+  });
+}; */
 
 const render2 = async (div) => {
   console.log("AAAAAAA");
   const nominativo = await prendiNomiProf();
-  const response = await restituisciStatoProf(nominativo);
-  const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+  const response = await restituisciStatoProf(nominativo); // cambiare servizio!!
+ // console.log(response);
+  
+let aperto = `<table class="table table-striped">
+<thead>
+  <tr>
+    <th scope="col">Ora</th>
+    <th scope="col">Classe</th>
+  </tr>
+</thead>
+<tbody>`;
 
-  let temp = `<tr><td class=%ORA></td><td class=%CLASSE></td></tr>`;
-  let html = "";
+const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+
+  let html = aperto;
+  let temp = `<tr> <td>%ORA</td><td>%CLASSE</td> </tr>`;
+  let chiuso = `</tbody> </table>`
   for (let i = 0; i < elencoOre.length; i++) {
-    let row = temp.replace("%ORA", "elencoOre[i]");
-    row = row.replace("%CLASSE", "response.result[0]?.Nome_Classe || "); // "N/A"
+    let row = temp.replace("%ORA", elencoOre[i]);
+    row = row.replace("%CLASSE", response.result[0]?.Nome_Classe); 
+    console.log(elencoOre[i]);
+    console.log(response.result[0]?.Nome_Classe);
     html += row;
   }
+  html += chiuso;
   div.innerHTML = html;
 
   const buttonsOrario = document.querySelectorAll(".ORARIOBUTTON");
@@ -122,15 +190,14 @@ const render2 = async (div) => {
   });
 };
 
-
 const showModal2 = () => {
+//render2(document.getElementById("dinamico"));
 modal.querySelector(".infos").setAttribute("hidden", true)
 modal.querySelector(".tabella").removeAttribute("hidden");
 modal.style.display = "block";
 }
 
 render(divElenco);
-
 
 //////////////////////////////// fetch //////////////////////////
 
@@ -170,9 +237,9 @@ const restituisciStatoProf = async (cognomeInput) => {
 };
 
 /*
-const ottieniOrario = async (cognomeInput) => {
+const ottieniOrarioTot = async (cognomeInput) => {
     console.log(cognomeInput);
-    const response = await fetch("/ottieniOrario", {
+    const response = await fetch("/ottieniOrarioTot", {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -181,5 +248,5 @@ const ottieniOrario = async (cognomeInput) => {
     });
     const data = await response.json(); 
     return data;
-};*/
-
+};
+*/
