@@ -85,11 +85,12 @@
           </div>
           <div class="modal-footer justify-content-center">
             <div class="row">
-              <button style="width: 200px" class="btn btn-secondary" id="visualizzaOrario" type="button">Visualizza
+              <button style="width: 200px" class="btn btn-secondary ORARIOBUTTON" id="visualizzaOrario" type="button">Visualizza
                 orario</button>
             </div>
           </div>
         </div>
+
         <div class="tabella" hidden>
           <table class="table table-striped">
             <thead>
@@ -98,14 +99,12 @@
                 <th scope="col">Classe</th>
               </tr>
             </thead>
-            <tr>
-              <td class="oraCol"></td>
-              <td class="classeCol"></td>
-            </tr>
+            <tbody><div id="dinamico"></div></tbody>
           </table>
         </div>
       </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 

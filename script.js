@@ -56,7 +56,7 @@ app.get("/ottieniNomiProf", (req, resp) => {
   });
 });
 
-app.get("/restituisciStatoProf", async (req, resp) => {
+app.post("/restituisciStatoProf", async (req, resp) => {
   const cognome = req.body.cognome;
   console.log(cognome);
   let giorniSettimana = ["Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
@@ -64,109 +64,49 @@ app.get("/restituisciStatoProf", async (req, resp) => {
   let indiceGiorno = dataCorrente.getDay();
   let nomeGiorno = giorniSettimana[indiceGiorno];
 
-  let ora = "";
-  let dataCorrente1 = new Date();
-  let oraCorrente = dataCorrente1.getHours();
-  let minutiCorrenti = dataCorrente1.getMinutes();
-  minutiCorrenti = minutiCorrenti < 10 ? "0" + minutiCorrenti : minutiCorrenti;
-  let oraFormattata = parseFloat(oraCorrente + "." + minutiCorrenti);
+let ora = "";
+let dataCorrente1 = new Date();
+let oraCorrente = dataCorrente1.getHours();
+let minutiCorrenti = dataCorrente1.getMinutes();
+minutiCorrenti = minutiCorrenti < 10 ? "0" + minutiCorrenti : minutiCorrenti;
+oraCorrente=9;
+minutiCorrenti=20;
+// minuti separati
+if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorrente === 8 && minutiCorrenti < 55))) {
+  ora = "Prima";
+} else if ((oraCorrente === 8 && minutiCorrenti >= 55) || (oraCorrente === 9 && minutiCorrenti < 50)) {
+  ora = "Seconda";
+} else if ((oraCorrente === 9 && minutiCorrenti >= 50) || (oraCorrente === 10 && minutiCorrenti < 40)) {
+  ora = "Terza";
+} else if ((oraCorrente === 10 && minutiCorrenti >= 40) || (oraCorrente === 11 && minutiCorrenti < 45)) {
+  ora = "Quarta";
+} else if ((oraCorrente === 11 && minutiCorrenti >= 45) || (oraCorrente === 12 && minutiCorrenti < 35)) {
+  ora = "Quinta";
+} else if ((oraCorrente === 12 && minutiCorrenti >= 35) || (oraCorrente === 13 && minutiCorrenti < 40)) {
+  ora = "Sesta";
+} else if ((oraCorrente === 13 && minutiCorrenti >= 40) || (oraCorrente === 14 && minutiCorrenti < 30)) {
+  ora = "Settima";
+}else{
+  ora="???"
+}
 
-  if (oraFormattata >= 8.00 && oraFormattata <= 8.55) {
-    ora = "Prima";
-  } else if (oraFormattata >= 8.55 && oraFormattata <= 9.50) {
-    ora = "Seconda";
-  } else if (oraFormattata >= 9.50 && oraFormattata <= 10.40) {
-    ora = "Terza";
-  } else if (oraFormattata >= 10.40 && oraFormattata <= 11.45) {
-    ora = "Quarta";
-  } else if (oraFormattata >= 11.45 && oraFormattata <= 12.35) {
-    ora = "Quinta";
-  } else if (oraFormattata >= 12.35 && oraFormattata <= 13.40) {
-    ora = "Sesta";
-  } else if (oraFormattata >= 13.40 && oraFormattata <= 14.30) {
-    ora = "Settima";
-  }
-
-  
-  // questa query non va neanche su dbeaver
-  // ricordarsi di switchare fetch da post a get perché inseriremo cognome dal body
   const sql = `SELECT Classe.Nome_Classe
   FROM Classe
   JOIN Ora ON Classe.ID_Classe = Ora.ID_Classe
   JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente
   JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno
-  WHERE Ora.Nome_Ora = 'Settima'
-    AND Docente.Cognome_Docente = 'VALENTI'
-    AND Giorno.Nome_Giorno = 'Martedi';
+  WHERE Ora.Nome_Ora = ?
+    AND Docente.Cognome_Docente LIKE ?
+    AND Giorno.Nome_Giorno = ?;
   `;
-
-  
-  const sqlCorr =  `SELECT Cognome_Docente FROM Docente
-  JOIN Ora ON Docente.ID_Docente = Ora.ID_Docente 
-  JOIN Classe ON Ora.ID_Classe = Classe.ID_Classe 
-  JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno
-  WHERE Ora.Nome_Ora = 'Settima' AND Classe.Nome_Classe='5C-INF' AND Giorno.Nome_Giorno = 'Martedi'`
-  
-  executeQuery(sql).then((response) => {
+ 
+  console.log("Parametri query:", {ora, cognome: "%" + cognome + "%", nomeGiorno });
+  executeQuery(sql, [ora, "%"+cognome+"%", nomeGiorno]).then((response) => {
     resp.json({
       result: response,
     });
   }).catch((error) => {
     console.error("Errore nell'esecuzione della query:", error);
-    resp.status(500).json({ error: "Errore nell'esecuzione della query" });
+    resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
   });
-/*
-  executeQuery(sql, [cognome, ora, nomeGiorno]).then((response) => {
-    resp.json({
-      result: response,
-      response: ["aa", "bb"]
-    });
-  }).catch((error) => {
-    console.error("Errore nell'esecuzione della query:", error);
-    resp.status(500).json({ error: "Errore nell'esecuzione della query" });
-  });*/
-
-/*
-
-  // query minori ??? spezziamo 
-  
-  // selezionare solo le classi di una determinata ora
-const selectOraQuery = `
-SELECT ID_Classe
-FROM Ora
-WHERE Nome_Ora = 'Settima';
-`;
-
-// selezionare solo i docenti di un determinato cognome
-const selectDocenteQuery = `
-SELECT ID_Docente
-FROM Docente
-WHERE Cognome_Docente = 'VALENTI';
-`;
-
-// selezionare solo i giorni di un determinato nome
-const selectGiornoQuery = `
-SELECT ID_Giorno
-FROM Giorno
-WHERE Nome_Giorno = 'Martedi';
-`;
-
-Promise.all([
-  executeQuery(selectClassiQuery),
-  executeQuery(selectOraQuery),
-  executeQuery(selectDocenteQuery),
-  executeQuery(selectGiornoQuery)
-])
-  .then((results) => {
-    const classiResult = results[0];
-    const oraResult = results[1];
-    const docenteResult = results[2];
-    const giornoResult = results[3];
-    
-    console.log("Risultati delle quert:", classiResult, oraResult, docenteResult, giornoResult);
-  })
-  .catch((error) => {
-    console.error("Errore durante l'esecuzione delle query:", error);
-  });
-  */
 });
