@@ -1,52 +1,15 @@
 const fs = require("fs");
-const mysql = require("mysql2");
+const executeQuery = require("./db.js");
 const conf = require("./conf.js");
 const express = require("express");
 const app = express();
-const connection = mysql.createConnection(conf);
 const http = require("http");
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-const server = http.createServer(app);
 const path = require("path");
 app.use("/", express.static(path.join(__dirname, "public")));
-
-server.listen(3040, () => {
-  console.log("---> server running on port 3040");
-});
-
-const executeQuery = (sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    connection.query(sql, params, function (err, result) {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        console.log("done");
-        resolve(result);
-      }
-    });
-  });
-};
-
-const csvFilePath = "EXP_PLANNING.csv";
-
-const leggiFile = () => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(csvFilePath, "utf8", (err, data) => {
-      if (err) {
-        console.error("Errore nella lettura del file: ", err);
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
-};
-
-module.exports = leggiFile;
 
 app.get("/ottieniNomiProf", (req, resp) => {
   const sql = "SELECT Cognome_Docente FROM Docente";
@@ -174,4 +137,10 @@ app.post("/ottieniOrarioTot", async (req, resp) => {
     resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
   });
  })
+ 
+ const server = http.createServer(app);
+ server.listen(3040, () => {
+   console.log("---> server running on port 3040");
+ });
+ 
 

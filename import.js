@@ -1,23 +1,21 @@
-const leggiFile = require("./script.js");
-const mysql = require("mysql2");
-const conf = require("./conf.js");
-const connection = mysql.createConnection(conf);
+const executeQuery = require("./db.js");
+const fs = require('fs');
+//const middleware = require("./middleware.js");
 
 const csvFilePath = "EXP_PLANNING.csv";
 
-const executeQuery = (sql, array) => {
-  return new Promise((resolve, reject) => {
-    connection.query(sql, array, function (err, result) {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        console.log("done");
-        resolve(result);
-      }
-    });
-  });
-};
+const leggiFile = () => {
+   return new Promise((resolve, reject) => {
+     fs.readFile(csvFilePath, "utf8", (err, data) => {
+       if (err) {
+         console.error("Errore nella lettura del file: ", err);
+         reject(err);
+       } else {
+         resolve(data);
+       }
+     });
+   });
+ };
 
 leggiFile(csvFilePath).then(async (data) => {
   let matrice = data.split("\n").map((element) => element.split(";"));
@@ -134,3 +132,4 @@ leggiFile(csvFilePath).then(async (data) => {
     }
   }
 });
+
