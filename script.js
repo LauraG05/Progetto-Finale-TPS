@@ -58,7 +58,6 @@ app.get("/ottieniNomiProf", (req, resp) => {
 
 app.post("/restituisciStatoProf", async (req, resp) => {
   const cognome = req.body.cognome;
-  console.log(cognome);
   let giorniSettimana = ["Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
   let dataCorrente = new Date();
   let indiceGiorno = dataCorrente.getDay();
@@ -69,8 +68,9 @@ let dataCorrente1 = new Date();
 let oraCorrente = dataCorrente1.getHours();
 let minutiCorrenti = dataCorrente1.getMinutes();
 minutiCorrenti = minutiCorrenti < 10 ? "0" + minutiCorrenti : minutiCorrenti;
-oraCorrente=9;
-minutiCorrenti=20;
+//oraCorrente=9;
+//minutiCorrenti=20;
+console.log("giorno: ", {nomeGiorno}, "ore: ", {oraCorrente},{minutiCorrenti});
 // minuti separati
 if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorrente === 8 && minutiCorrenti < 55))) {
   ora = "Prima";
@@ -113,7 +113,7 @@ if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorren
   `;
   
 
- // console.log("Parametri query:", {ora, cognome: "%" + cognome + "%", nomeGiorno });
+  console.log("Parametri query:", {ora, cognome: "%" + cognome + "%", nomeGiorno });
   executeQuery(sql, [ora, "%"+cognome+"%", nomeGiorno]).then((response) => {
     resp.json({
       result: response,
@@ -126,12 +126,13 @@ if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorren
 
 app.post("/ottieniOrarioTot", async (req, resp) => {
   const cognome = req.body.cognome;
-  console.log(cognome);
+  console.log("cognome secondo servizio; "+cognome);
+
+  /*
   let giorniSettimana = ["Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
   let dataCorrente = new Date();
   let indiceGiorno = dataCorrente.getDay();
   let nomeGiorno = giorniSettimana[indiceGiorno];
-
   
   const sql = `SELECT Classe.Nome_Classe
   FROM Classe
@@ -141,13 +142,30 @@ app.post("/ottieniOrarioTot", async (req, resp) => {
   WHERE Ora.Nome_Ora = ?
     AND Docente.Cognome_Docente LIKE ?
     AND Giorno.Nome_Giorno = ?;
-  `;
-  
-  const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+  `;*/
 
- elencoOre.forEach((ore) => {
-  console.log("Parametri query:", {ore, cognome: "%" + cognome + "%", nomeGiorno });
-  executeQuery(sql, [elencoOre[i], "%"+cognome+"%", nomeGiorno]).then((response) => {
+  const sql = `SELECT Classe.Nome_Classe
+  FROM Classe
+  JOIN Ora ON Classe.ID_Classe = Ora.ID_Classe
+  JOIN Docente ON Ora.ID_Docente = Docente.ID_Docente
+  JOIN Giorno ON Ora.ID_Giorno = Giorno.ID_Giorno
+  WHERE Ora.Nome_Ora = 'Settima'
+    AND Docente.Cognome_Docente LIKE '%VALENTI%'
+    AND Giorno.Nome_Giorno = 'Martedi'`;
+  
+  //const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+
+ // console.log("Parametri queryAAAAAAA:", {"2nd query":ore, cognome: "%" + cognome + "%", nomeGiorno });
+ /* executeQuery(sql, [ore, "%"+cognome+"%", nomeGiorno]).then((response) => {
+    resp.json({
+      result: response,
+    });
+  }).catch((error) => {
+    console.error("Errore nell'esecuzione della query:", error);
+    resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
+  });
+  */
+  executeQuery(sql).then((response) => {
     resp.json({
       result: response,
     });
@@ -156,5 +174,4 @@ app.post("/ottieniOrarioTot", async (req, resp) => {
     resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
   });
  })
-});
 

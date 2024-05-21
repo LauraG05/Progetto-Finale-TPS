@@ -1,10 +1,7 @@
 const divElenco = document.getElementById("elenco");
 const orarioBut = document.getElementById("visualizzaOrario");
 
-let elencoProfN = ["Mario", "Luigi", "Filippo", "aaa"];
-let elencoProfC = ["Rossi", "Neri", "Bianchi", "aaa"];
-
-const modal = document.getElementById("myModal")
+const modal = document.getElementById("myModal");
 
 const calcolaOraAttuale = () => {
   let ora = "";
@@ -12,7 +9,9 @@ const calcolaOraAttuale = () => {
   let oraCorrente = dataCorrente1.getHours();
   let minutiCorrenti = dataCorrente1.getMinutes();
   minutiCorrenti = minutiCorrenti < 10 ? "0" + minutiCorrenti : minutiCorrenti;
-console.log(oraCorrente);
+// oraCorrente=9;
+// minutiCorrenti=20;
+ console.log(oraCorrente);
  console.log(minutiCorrenti)
   // minuti separati
   if ((oraCorrente === 8 && minutiCorrenti >= 0) && (oraCorrente < 8 || (oraCorrente === 8 && minutiCorrenti < 55))) {
@@ -39,7 +38,6 @@ const render = (div) => {
     let nominativo = [];
     prendiNomiProf().then(response => {
          nominativo = response;
-       //  console.log(nominativo.length);
   
   const template = `
   <div class="AOO" style="padding-top: 10px; padding-left: 20px;">
@@ -58,7 +56,7 @@ const render = (div) => {
   buttonsProf.forEach((button, index) => {
     button.onclick = async () => {
       let ora = calcolaOraAttuale();
-      console.log(ora);
+      console.log("ora: "+ora);
       await showModal1(nominativo[index], ora);
     };
   });
@@ -113,140 +111,109 @@ window.onclick = (event) => {
     modal.style.display = "none";
   }
 }
-/*
-const render2 = async (div) => {
-  console.log("AAAAAAA");
-  const nominativo = await prendiNomiProf();
-  const response = await restituisciStatoProf(nominativo); // cambiare servizio!!
-  console.log(response);
-  
-let aperto = `<table class="table table-striped">
-<thead>
-  <tr>
-    <th scope="col">Ora</th>
-    <th scope="col">Classe</th>
-  </tr>
-</thead>
-<tbody>`;
-
-const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
-
-  let html = aperto;
-  let temp = `<tr> <td>%ORA</td><td>%CLASSE</td> </tr>`;
-  let chiuso = `</tbody> </table>`
-  for (let i = 0; i < elencoOre.length; i++) {
-    let row = temp.replace("%ORA", elencoOre[i]);
-    row = row.replace("%CLASSE", response.result[0]?.Nome_Classe); 
-    console.log(elencoOre[i]);
-    console.log(response.result[0]?.Nome_Classe);
-    html += row;
-  }
-  html += chiuso;
-  div.innerHTML = html;
-
-  const buttonsOrario = document.querySelectorAll(".ORARIOBUTTON");
-  buttonsOrario.forEach((but) => {
-    but.onclick = () => {
-      showModal2();
-    };
-  });
-}; */
-
-const render2 = async (div) => {
-  console.log("AAAAAAA");
-  const nominativo = await prendiNomiProf();
-  const response = await restituisciStatoProf(nominativo); // cambiare servizio!!
- // console.log(response);
-  
-let aperto = `<table class="table table-striped">
-<thead>
-  <tr>
-    <th scope="col">Ora</th>
-    <th scope="col">Classe</th>
-  </tr>
-</thead>
-<tbody>`;
-
-const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
-
-  let html = aperto;
-  let temp = `<tr> <td>%ORA</td><td>%CLASSE</td> </tr>`;
-  let chiuso = `</tbody> </table>`
-  for (let i = 0; i < elencoOre.length; i++) {
-    let row = temp.replace("%ORA", elencoOre[i]);
-    row = row.replace("%CLASSE", response.result[0]?.Nome_Classe); 
-    console.log(elencoOre[i]);
-    console.log(response.result[0]?.Nome_Classe);
-    html += row;
-  }
-  html += chiuso;
-  div.innerHTML = html;
-
-  const buttonsOrario = document.querySelectorAll(".ORARIOBUTTON");
-  buttonsOrario.forEach((but) => {
-    but.onclick = () => {
-      showModal2();
-    };
-  });
-};
-
-const showModal2 = () => {
-//render2(document.getElementById("dinamico"));
-modal.querySelector(".infos").setAttribute("hidden", true)
-modal.querySelector(".tabella").removeAttribute("hidden");
-modal.style.display = "block";
-}
-
-render(divElenco);
 
 //////////////////////////////// fetch //////////////////////////
 
-function prendiNomiProf () {
-    return new Promise ((resolve, reject) => {
-        fetch("/ottieniNomiProf")
-        .then((resp) => resp.json())
-        .then((resp) => {
-          resolve(resp.prof);
-        });  
-    })
-}
-/*
-function restituisciStatoProf () {
-  return new Promise ((resolve, reject) => {
-      fetch("/restituisciStatoProf")
+const prendiNomiProf = () => {
+  return new Promise((resolve, reject) => {
+    fetch("/ottieniNomiProf")
       .then((resp) => resp.json())
-      .then((data) => {
-        resolve(data);
-        console.log("Risultato della query:", data.result); // corretto
-      });  
-  })
-}*/
-
+      .then((resp) => {
+        resolve(resp.prof);
+      })
+      .catch(error => reject(error));
+  });
+};
 
 const restituisciStatoProf = async (cognomeInput) => {
-    console.log(cognomeInput);
-    const response = await fetch("/restituisciStatoProf", {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-        },
-        body: JSON.stringify({ cognome: cognomeInput }),
-    });
-    const data = await response.json(); 
-    return data;
+  console.log(cognomeInput);
+  const response = await fetch("/restituisciStatoProf", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ cognome: cognomeInput }),
+  });
+  const data = await response.json();
+  return data;
 };
 
-/*
 const ottieniOrarioTot = async (cognomeInput) => {
-    console.log(cognomeInput);
-    const response = await fetch("/ottieniOrarioTot", {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-        },
-        body: JSON.stringify({ cognome: cognomeInput }),
-    });
-    const data = await response.json(); 
-    return data;
+  console.log(cognomeInput);
+  const response = await fetch("/ottieniOrarioTot", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ cognome: cognomeInput }),
+  });
+  const data = await response.json();
+  return data;
 };
-*/
+//////////////////////////////////////////////////////////////
+
+const render2 =  async () => {
+  let nominativo;
+  try {
+    nominativo = await prendiNomiProf();
+  } catch (error) {
+    console.error("Error fetching nominativo:", error);
+    return;
+  }
+  
+  console.log("response terzo servizio");
+
+  const buttonsOrario = document.querySelectorAll(".ORARIOBUTTON");
+  buttonsOrario.forEach((but) => {
+    but.onclick = () => {
+      showModal2(nominativo, document.getElementById("dinamico"));
+    };
+  });
+};
+
+const showModal2 = async (nominativo, div) => {
+  modal.querySelector(".infos").setAttribute("hidden", true);
+  modal.querySelector(".tabella").removeAttribute("hidden");
+  modal.style.display = "block";
+
+  let orarioTot;
+  try {
+    orarioTot = await ottieniOrarioTot(nominativo);
+  } catch (error) {
+    console.error("Error fetching orarioTot:", error);
+    return;
+  }
+  console.log("response orario tot: "+orarioTot);
+  console.log("response orario tot classe: " + orarioTot[0]?.Nome_Classe);
+
+  let aperto = `<table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Ora</th>
+        <th scope="col">Classe</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+  let html = aperto;
+  let temp = `<tr> <td>%ORA</td><td>%CLASSE</td> </tr>`;
+  let chiuso = `</tbody> </table>`;
+
+  for (let i = 0; i < elencoOre.length; i++) {
+    let row = temp.replace("%ORA", elencoOre[i]);
+   row = row.replace("%CLASSE", orarioTot[i]?.Nome_Classe || "Non disp.");
+
+    console.log(elencoOre[i]);
+    console.log(orarioTot[i]?.Nome_Classe);
+    html += row;
+  }
+  html += chiuso;
+  div.innerHTML = html;
+
+};
+
+render2();
+render(divElenco);
+
+
