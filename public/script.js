@@ -174,6 +174,41 @@ const render2 =  async () => {
   });
 };
 
+const renderOrario = (orarioTot) => {
+   let table = `<table class="table table-striped">
+                     <thead>
+                        <tr>
+                           <th scope="col">Ora</th>
+                           <th scope="col">Lunedì</th>
+                           <th scope="col">Martedì</th>
+                           <th scope="col">Mercoledì</th>
+                           <th scope="col">Giovedì</th>
+                           <th scope="col">Venerdì</th>
+                        </tr>
+                     </thead>
+                  <tbody>
+                     %BODY%
+                  </tbody> 
+                  </table>`;
+
+ const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
+ const elencoGiorni = ["Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi"]; 
+ let rowTemplate = `<tr> <td>%lun</td><td>%mar</td><td>%mer</td><td>%gio</td><td>%ven</td> </tr>`;
+ let rows = "";
+ elencoOre.forEach((ora) => {
+   let row = '<tr><td>' +  ora + '</td>';
+   elencoGiorni.forEach((giorno) => {
+      const element = orarioTot.find((element) => element.Nome_Giorno === giorno && element.Nome_Ora === ora);
+      const data = element ? element.Nome_Classe : "";
+      row += '<td>' + data + '</td>';
+   })
+   row += '</tr>';
+   rows += row;
+ })
+ table = table.replace("%BODY", rows);
+ return table;
+}
+
 const showModal2 = async (nominativo, div) => {
   modal.querySelector(".infos").setAttribute("hidden", true);
   modal.querySelector(".tabella").removeAttribute("hidden");
@@ -189,30 +224,8 @@ const showModal2 = async (nominativo, div) => {
   console.log("response orario tot: "+orarioTot);
   console.log("response orario tot classe: " + orarioTot[0]?.Nome_Classe);
 
-  let aperto = `<table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col">Ora</th>
-        <th scope="col">Classe</th>
-      </tr>
-    </thead>
-    <tbody>`;
 
-  const elencoOre = ["Prima", "Seconda", "Terza", "Quarta", "Quinta", "Sesta", "Settima"];
-  let html = aperto;
-  let temp = `<tr> <td>%ORA</td><td>%CLASSE</td> </tr>`;
-  let chiuso = `</tbody> </table>`;
-
-  for (let i = 0; i < elencoOre.length; i++) {
-    let row = temp.replace("%ORA", elencoOre[i]);
-   row = row.replace("%CLASSE", orarioTot[i]?.Nome_Classe || "Non disp.");
-
-    console.log(elencoOre[i]);
-    console.log(orarioTot[i]?.Nome_Classe);
-    html += row;
-  }
-  html += chiuso;
-  div.innerHTML = html;
+  div.innerHTML = renderOrario(orarioTot);
 
 };
 
