@@ -1,7 +1,7 @@
 const divElenco = document.getElementById("elenco");
 const orarioBut = document.getElementById("visualizzaOrario");
 
-const modal = document.getElementById("myModal");
+const modal = document.getElementById("modalDocente");
 
 const calcolaOraAttuale = () => {
   let ora = "";
@@ -35,9 +35,9 @@ return ora;
 };
 
 const render = (div) => {
-    let nominativo = [];
+    let nominativi = [];
     prendiNomiProf().then(response => {
-         nominativo = response;
+         nominativi = response;
   
   const template = `
   <div class="AOO" style="padding-top: 10px; padding-left: 20px;">
@@ -45,9 +45,9 @@ const render = (div) => {
   </div>`;
 
   let html = "";
-  for (let i = 0; i < nominativo.length; i++) {
-    console.log(nominativo.lenght);
-    let row = template.replace("%NOME", nominativo[i]);
+  for (let i = 0; i < nominativi.length; i++) {
+    console.log(nominativi.lenght);
+    let row = template.replace("%NOME", nominativi[i]);
     html += row;
   }
   div.innerHTML = html;
@@ -57,7 +57,7 @@ const render = (div) => {
     button.onclick = async () => {
       let ora = calcolaOraAttuale();
       console.log("ora: "+ora);
-      await showModal1(nominativo[index], ora);
+      await showModalDocente(nominativi[index], ora);
     };
   });
   filtraRisultati();
@@ -66,7 +66,7 @@ render2(document.getElementById("dinamico"));
 };  
 
 
-const showModal1 = async (nominativo, ora) => {
+const showModalDocente = async (nominativo, ora) => {
   modal.querySelector(".infos").removeAttribute("hidden")
   modal.querySelector(".tabella").setAttribute("hidden", true)
   const response = await restituisciStatoProf(nominativo);
@@ -76,6 +76,7 @@ const showModal1 = async (nominativo, ora) => {
   modal.querySelector("h5").innerText = `${nominativo}`;
   // senza "?" da undefined in Nome_Classe ???
   modal.querySelector("p").innerText = `Locazione di ${nominativo} alla ${ora} ora \nSi trova in: ${response.result[0]?.Nome_Classe || "nessuna classe"}`;
+  modal.querySelector("#visualizzaOrario").setAttribute("docente", nominativo);
 };
 
 const filtraRisultati = () => {
@@ -148,14 +149,15 @@ const ottieniOrarioTot = async (cognomeInput) => {
     body: JSON.stringify({ cognome: cognomeInput }),
   });
   const data = await response.json();
-  return data;
+  console.log(data);
+  return data.result;
 };
 //////////////////////////////////////////////////////////////
 
 const render2 =  async () => {
-  let nominativo;
+  let nominativi;
   try {
-    nominativo = await prendiNomiProf();
+    nominativi = await prendiNomiProf();
   } catch (error) {
     console.error("Error fetching nominativo:", error);
     return;
@@ -164,8 +166,9 @@ const render2 =  async () => {
   console.log("response terzo servizio");
 
   const buttonsOrario = document.querySelectorAll(".ORARIOBUTTON");
-  buttonsOrario.forEach((but) => {
-    but.onclick = () => {
+  buttonsOrario.forEach((button) => {
+    button.onclick = () => {
+      const nominativo = button.getAttribute("docente");
       showModal2(nominativo, document.getElementById("dinamico"));
     };
   });
