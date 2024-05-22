@@ -8,6 +8,9 @@ const http = require("http");
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
+const emailer = require('./email.js');
+const jsonEmail = JSON.parse(fs.readFileSync("./mail.json"));
+
 const path = require("path");
 app.use("/", express.static(path.join(__dirname, "public")));
 
@@ -102,7 +105,7 @@ const ottieniOrarioTot = async (cognome) => {
       `;
 
    sql = sql.replace("%1", cognome);
-   
+
    console.log(sql);
 
    try {
@@ -117,7 +120,7 @@ const ottieniOrarioTot = async (cognome) => {
 app.post("/ottieniOrarioTot", async (req, resp) => {
    const cognome = req.body.cognome.trim();
    console.log("cognome secondo servizio; " + cognome);
-   
+
    try {
       const response = await ottieniOrarioTot(cognome);
       resp.json({
@@ -128,6 +131,72 @@ app.post("/ottieniOrarioTot", async (req, resp) => {
       resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
    }
 })
+
+
+app.post("/inviaEmailAdmin", async (req, resp) => {
+   const oggetto = req.body.oggetto;
+   const testo = req.body.testo;
+   try {
+      await emailer.send(
+         jsonEmail,
+         "strazzullociroandrea@itis-molinari.eu",
+         oggetto,
+         testo
+      );
+      console.log({ mail: "mail inviata" });
+      resp.json({ result: true });
+   } catch (err) {
+      console.log({ err: err })
+   }
+});
+
+// fare servizio creazione password
+const shortid = require('shortid');
+let generaPW = () => {
+   return shortid.generate();
+}
+
+const Registrazione = async (mail) => {
+   let controllo = `SELECT * FROM Utenti 
+   WHERE Nome_Utente = '${mail}'`;
+   // controllo se c'è già utente
+   try {
+      const responseControllo = await executeQuery(controllo, undefined)
+      if (responseControllo.length > 0) {
+         return false;
+      } else {
+         const passwordTemp = generaPW();
+         let sql = `INSERT INTO Utenti(Nome_Utente, Nome_Password) 
+               VALUES ('${mail}', '${passwordTemp}') `;
+
+         const response = await executeQuery(sql, undefined);
+
+         await emailer.send(
+            jsonEmail,
+            mail,
+            "Utente creato con successo",
+            "Questa è la tua nuova password: "+passwordTemp
+         );
+         return true;
+      };
+   } catch (err) {
+      console.log(err);
+      return null;
+   }
+}
+
+app.post("/Registrazione", async (req, resp) => {
+   const email = req.body.email;
+   try {
+      const response = await Registrazione(email);
+      resp.json({
+         result: response,
+      });
+   } catch (error) {
+      console.error("Errore nell'esecuzione della query:", error);
+      resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
+   }
+});
 
 const server = http.createServer(app);
 server.listen(3040, () => {

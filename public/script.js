@@ -152,6 +152,20 @@ const ottieniOrarioTot = async (cognomeInput) => {
   console.log(data);
   return data.result;
 };
+
+export const Registrazione = async (utenteInput) => {
+  const response = await fetch("/Registrazione", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ email: utenteInput }),
+  });
+  const data = await response.json();
+  console.log(data);
+  return data.result;
+};
+
 //////////////////////////////////////////////////////////////
 
 const render2 =  async () => {
@@ -231,5 +245,4 @@ const showModal2 = async (nominativo, div) => {
 
 render2();
 render(divElenco);
-
 
