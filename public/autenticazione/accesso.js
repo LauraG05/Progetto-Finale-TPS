@@ -29,9 +29,8 @@ const mandaMail = document.getElementById("mandaMail");
   conferma.onclick = () => {
     console.log("??");
     Accesso(inserisciUtente.value, inserisciPassword.value).then((response) => {
-        console.log(response.result);
-        if (response.result === true) {
-          sessionStorage.setItem("token", data.token);
+        if (response.result.response === true) {
+          sessionStorage.setItem("token", response.result.token);
             window.location.href = '../index.html';
         } else {
             console.log('Accesso non riuscito. Riprova.');

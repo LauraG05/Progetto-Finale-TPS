@@ -182,7 +182,7 @@ const Registrazione = async (mail) => {
          return false; // c'è già
       } else {
          const passwordTemp = generaPW();
-
+         console.log("p " +passwordTemp);
          let sql = `INSERT INTO Utenti(Nome_Utente, Nome_Password) 
                VALUES ('${mail}', '${passwordTemp}') `;
 
@@ -225,8 +225,9 @@ const Accesso = async (mail, pw) => {
 
    const accedi = await executeQuery(controllo);
    if (accedi.length > 0) {
-      return { response: true,
-         token: passwordTemp 
+      return { 
+         response: true,
+         token: pw 
       }
    }else {
       return false; // utente mancante, si deve registrare

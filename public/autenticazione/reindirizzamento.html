@@ -18,25 +18,60 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            color: white;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            text-align: center;
         }
         h1 {
             margin-bottom: 20px;
-            font-size: 50px;
+            font-size: 4rem;
             font-weight: 300;
         }
-        .btn-custom {
-            width: 150px;
-            margin: 5px 0;
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
         }
+        .btn-custom {
+            width: 180px;
+            margin: 10px 5px;
+            padding: 10px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #005f73;
+            transform: scale(1.05);
+        }
+     
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #fff;
+            margin:10px;
+        }
+
     </style>
 </head>
 <body>
 
 <h1>Dov'è</h1>
-<button type="submit" id="accedi" class="btn btn-primary btn-custom" onclick="window.location.href = './accesso.html'">Accedi</button>
-o
-<button type="submit" id="registrati" class="btn btn-secondary btn-custom" onclick="window.location.href = './registrazione.html'">Registrati</button>
+<div style="font-size:20px">Trova qualsiasi prof,</div><div style="padding-top:5px; font-size:20px">in qualsiasi momento.</div>
+<div style="padding-top:60px">
+    <button type="submit" id="accedi" class="btn btn-primary btn-custom" onclick="window.location.href = './accesso.html'">Accedi</button>
+    <div class="divider">oppure</div>
+    <button type="submit" id="registrati" class="btn btn-secondary btn-custom" onclick="window.location.href = './registrazione.html'">Registrati</button>
+</div>
 
 </body>
 </html>

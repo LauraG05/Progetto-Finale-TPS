@@ -36,8 +36,8 @@ conferma.onclick = () => {
 
     if(controlloMail(inserisciUtente.value)){
         console.log(response.result);
-        if (response.result === true) {
-          sessionStorage.setItem("token", data.token);
+        if (response.result.response === true) {
+          sessionStorage.setItem("token", data.result.token);
             window.location.href = './accesso.html';
         } else {
             console.log('Registrazione non riuscita. Riprova.');
