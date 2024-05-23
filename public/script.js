@@ -81,7 +81,8 @@ const render = (div) => {
       await showModalDocente(nominativi[index], ora);
     };
   });
-  filtraRisultati(); // va in errore la render
+  const inputFiltro = document.querySelector(".ricerca");
+  inputFiltro.addEventListener('input', filtraRisultati)
 });
 render2(document.getElementById("dinamico"));
 };  
