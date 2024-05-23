@@ -36,20 +36,41 @@ return ora;
 
 const render = (div) => {
     let nominativi = [];
-    prendiNomiProf().then(response => {
+   prendiNomiProf().then (response => {
          nominativi = response;
   
   const template = `
-  <div class="AOO" style="padding-top: 10px; padding-left: 20px;">
-    <button type="button" class="btn btn-Prof">%NOME</button>
+  <div class="AOO" style="padding-top: 10px; padding-left: 10px;">
+    <button type="button" style="--circle-color: %COLORE;" class="btn btn-Prof">%NOME</button>
   </div>`;
+
+  const colori = [
+    '#FF5733', '#33FF57', '#5733FF', '#FF33A1', '#33FFF5', '#FFA533', '#A533FF', '#FF3357',
+    '#33FFA5', '#5733A5', '#F5FF33', '#33A1FF', '#FF33F5', '#A5FF33', '#3357FF', '#FF5733',
+    '#57FF33', '#A1FF33', '#5733FF', '#33FF57', '#FFA533', '#33FFA1', '#A533FF', '#FF3357',
+    '#33FFF5', '#3357FF', '#F5FF33', '#33A1FF', '#FF33F5', '#57FF33', '#A1FF33', '#FF5733',
+    '#FF5733', '#33FF57', '#5733FF', '#FF33A1', '#33FFF5', '#FFA533', '#A533FF', '#FF3357',
+    '#33FFA5', '#5733A5', '#F5FF33', '#33A1FF', '#FF33F5', '#A5FF33', '#3357FF', '#FF5733',
+    '#57FF33', '#A1FF33', '#5733FF', '#33FF57', '#FFA533', '#33FFA1', '#A533FF', '#FF3357',
+    '#33FFF5', '#3357FF', '#F5FF33', '#33A1FF', '#FF33F5', '#57FF33', '#A1FF33', '#FF5733',
+    '#FF5733', '#33FF57', '#5733FF', '#FF33A1', '#33FFF5', '#FFA533', '#A533FF', '#FF3357',
+    '#33FFA5', '#5733A5', '#F5FF33', '#33A1FF', '#FF33F5', '#A5FF33', '#3357FF', '#FF5733',
+    '#57FF33', '#A1FF33', '#5733FF', '#33FF57', '#FFA533', '#33FFA1', '#A533FF', '#FF3357',
+    '#33FFF5', '#3357FF', '#F5FF33', '#33A1FF', '#FF33F5', '#57FF33', '#A1FF33', '#FF5733',
+    '#FF5733', '#33FF57', '#5733FF', '#FF33A1', '#33FFF5', '#FFA533', '#A533FF', '#FF3357',
+    '#33FFA5', '#5733A5', '#F5FF33', '#33A1FF', '#FF33F5', '#A5FF33', '#3357FF', '#FF5733',
+    '#57FF33', '#A1FF33', '#5733FF', '#33FF57', '#FFA533', '#33FFA1', '#A533FF', '#FF3357',
+    '#33FFF5', '#3357FF', '#F5FF33', '#33A1FF'
+  ];
+  
 
   let html = "";
   for (let i = 0; i < nominativi.length; i++) {
-    console.log(nominativi.lenght);
-    let row = template.replace("%NOME", nominativi[i]);
+    console.log(nominativi.length);
+    let row = template.replace("%NOME", nominativi[i]).replace("%COLORE", colori[i]);
     html += row;
   }
+
   div.innerHTML = html;
 
   const buttonsProf = document.querySelectorAll(".btn-Prof");
@@ -60,7 +81,7 @@ const render = (div) => {
       await showModalDocente(nominativi[index], ora);
     };
   });
-  filtraRisultati();
+  filtraRisultati(); // va in errore la render
 });
 render2(document.getElementById("dinamico"));
 };  
@@ -131,6 +152,7 @@ const restituisciStatoProf = async (cognomeInput) => {
   const response = await fetch("/restituisciStatoProf", {
     method: "POST",
     headers: {
+     // "tokenUtente" : token,
       "content-type": "application/json",
     },
     body: JSON.stringify({ cognome: cognomeInput }),
@@ -144,26 +166,43 @@ const ottieniOrarioTot = async (cognomeInput) => {
   const response = await fetch("/ottieniOrarioTot", {
     method: "POST",
     headers: {
+     // "tokenUtente" : token,
       "content-type": "application/json",
     },
     body: JSON.stringify({ cognome: cognomeInput }),
   });
   const data = await response.json();
   console.log(data);
-  return data.result;
+  return data.result; 
 };
 
 export const Registrazione = async (utenteInput) => {
   const response = await fetch("/Registrazione", {
     method: "POST",
     headers: {
+      "authorization": "bearer "+ sessionStorage.getItem("token"),
       "content-type": "application/json",
     },
     body: JSON.stringify({ email: utenteInput }),
   });
   const data = await response.json();
   console.log(data);
-  return data.result;
+  return data;
+};
+
+export const Accesso = async (utenteInput, pwInput) => {
+  const response = await fetch("/Accesso", {
+    method: "POST",
+    headers: {
+      "authorization": "bearer "+ sessionStorage.getItem("token"),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email: utenteInput, token: pwInput }),
+  });
+  const data = await response.json();
+
+  console.log(data);
+  return data;
 };
 
 //////////////////////////////////////////////////////////////
@@ -201,7 +240,7 @@ const renderOrario = (orarioTot) => {
                         </tr>
                      </thead>
                   <tbody>
-                     %BODY%
+                     %BODY
                   </tbody> 
                   </table>`;
 
@@ -238,9 +277,7 @@ const showModal2 = async (nominativo, div) => {
   console.log("response orario tot: "+orarioTot);
   console.log("response orario tot classe: " + orarioTot[0]?.Nome_Classe);
 
-
   div.innerHTML = renderOrario(orarioTot);
-
 };
 
 render2();

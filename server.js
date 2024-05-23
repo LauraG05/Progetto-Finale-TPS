@@ -119,6 +119,9 @@ const ottieniOrarioTot = async (cognome) => {
 
 app.post("/ottieniOrarioTot", async (req, resp) => {
    const cognome = req.body.cognome.trim();
+   //const tokenMail = req.headers.token.trim();
+
+   // confronto sessionStorage
    console.log("cognome secondo servizio; " + cognome);
 
    try {
@@ -139,7 +142,7 @@ app.post("/inviaEmailAdmin", async (req, resp) => {
    try {
       await emailer.send(
          jsonEmail,
-         "strazzullociroandrea@itis-molinari.eu",
+         "grandilaura@itis-molinari.eu",
          oggetto,
          testo
       );
@@ -156,28 +159,46 @@ let generaPW = () => {
    return shortid.generate();
 }
 
+async function controlloMail (email) {
+   if(email.includes("@itis-molinari.eu")){
+      return true;
+   }
+ }
+ 
 const Registrazione = async (mail) => {
+
+   if (await controlloMail(mail)) {
+      console.log("L'indirizzo email è valido.");
+    } else {
+      console.log("L'indirizzo email non è valido.");
+    }
+
    let controllo = `SELECT * FROM Utenti 
    WHERE Nome_Utente = '${mail}'`;
    // controllo se c'è già utente
    try {
       const responseControllo = await executeQuery(controllo, undefined)
       if (responseControllo.length > 0) {
-         return false;
+         return false; // c'è già
       } else {
          const passwordTemp = generaPW();
+
          let sql = `INSERT INTO Utenti(Nome_Utente, Nome_Password) 
                VALUES ('${mail}', '${passwordTemp}') `;
+
 
          const response = await executeQuery(sql, undefined);
 
          await emailer.send(
             jsonEmail,
             mail,
-            "Utente creato con successo",
-            "Questa è la tua nuova password: "+passwordTemp
+            `Utente creato con successo`,
+            `Benvenutx nel servizio 'Dov'è'
+             \nQuesta è la tua password: ${passwordTemp}, usala per accedervi.`
          );
-         return true;
+         return { response: true,
+            token: passwordTemp 
+         }
       };
    } catch (err) {
       console.log(err);
@@ -188,7 +209,35 @@ const Registrazione = async (mail) => {
 app.post("/Registrazione", async (req, resp) => {
    const email = req.body.email;
    try {
-      const response = await Registrazione(email);
+      const response = await Registrazione(email, undefined);
+      resp.json({
+         result: response,
+      });
+   } catch (error) {
+      console.error("Errore nell'esecuzione della query:", error);
+      resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
+   }
+});
+
+const Accesso = async (mail, pw) => {
+   let controllo = `SELECT * FROM Utenti 
+   WHERE Nome_Utente = '${mail}' AND Nome_Password = '${pw}'`;
+
+   const accedi = await executeQuery(controllo);
+   if (accedi.length > 0) {
+      return { response: true,
+         token: passwordTemp 
+      }
+   }else {
+      return false; // utente mancante, si deve registrare
+   }
+}
+
+app.post("/Accesso", async (req, resp) => {
+   const email = req.body.email;
+   const token = req.body.token;
+   try {
+      const response = await Accesso(email, token);
       resp.json({
          result: response,
       });

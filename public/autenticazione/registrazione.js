@@ -20,22 +20,29 @@ const mandaMail = document.getElementById("mandaMail");
     }
   }
 
-  import {Accesso} from "./../script.js";
+  import {Registrazione} from "./../script.js";
 
   let inserisciUtente = document.getElementById("inserisciUtente");
-  let inserisciPassword = document.getElementById("inserisciPass");
   let conferma = document.getElementById("conferma");
 
-  conferma.onclick = () => {
-    console.log("??");
-    Accesso(inserisciUtente.value, inserisciPassword.value).then((response) => {
+  async function controlloMail (email) {
+    if(email.includes("@itis-molinari.eu")){
+       return true;
+    }
+  }
+
+conferma.onclick = () => {
+    Registrazione(inserisciUtente.value).then((response) => {
+
+    if(controlloMail(inserisciUtente.value)){
         console.log(response.result);
         if (response.result === true) {
           sessionStorage.setItem("token", data.token);
-            window.location.href = '../index.html';
+            window.location.href = './accesso.html';
         } else {
-            console.log('Accesso non riuscito. Riprova.');
+            console.log('Registrazione non riuscita. Riprova.');
         }
+      }
     }).catch((error) => {
         console.error('Errore:', error);
         alert('Si è verificato un errore. Riprova più tardi.');
