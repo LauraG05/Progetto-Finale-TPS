@@ -12,7 +12,7 @@ const emailer = require('./email.js');
 const jsonEmail = JSON.parse(fs.readFileSync("./mail.json"));
 
 const path = require("path");
-app.use("/", express.static(path.join(__dirname, "public")));
+app.use("/", express.static(path.join(__dirname, "autenticazione")));
 
 app.get("/ottieniNomiProf", (req, resp) => {
    const sql = "SELECT Cognome_Docente FROM Docente";

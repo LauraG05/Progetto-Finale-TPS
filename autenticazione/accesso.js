@@ -20,7 +20,7 @@ async function inviaEmailAdmin(oggetto, testo) {
   }
 }
 
-import { Accesso } from "../script.js";
+import { Accesso } from "./public/script.js";
 
 let inserisciUtente = document.getElementById("inserisciUtente");
 let inserisciPassword = document.getElementById("inserisciPass");
@@ -31,7 +31,7 @@ conferma.onclick = () => {
   Accesso(inserisciUtente.value, inserisciPassword.value).then((response) => {
     if (response.result.response === true) {
       sessionStorage.setItem("token", response.result.token);
-      window.location.href = '../index.html';
+      window.location.href = './public/index.html';
     } else {
       console.log('Accesso non riuscito. Riprova.');
     }

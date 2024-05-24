@@ -20,7 +20,7 @@ const mandaMail = document.getElementById("mandaMail");
     }
   }
 
-  import {Registrazione} from "./../script.js";
+  import {Registrazione} from "./public/script.js";
 
   let inserisciUtente = document.getElementById("inserisciUtente");
   let conferma = document.getElementById("conferma");

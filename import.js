@@ -132,4 +132,3 @@ leggiFile(csvFilePath).then(async (data) => {
     }
   }
 });
-
