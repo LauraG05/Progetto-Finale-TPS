@@ -3,6 +3,8 @@ const orarioBut = document.getElementById("visualizzaOrario");
 
 const modal = document.getElementById("modalDocente");
 
+window.location.href = "../autenticazione/reindirizzamento.html";
+
 const calcolaOraAttuale = () => {
   let ora = "";
   let dataCorrente1 = new Date();
