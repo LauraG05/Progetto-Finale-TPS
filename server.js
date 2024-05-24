@@ -118,10 +118,8 @@ const ottieniOrarioTot = async (cognome) => {
 }
 
 app.post("/ottieniOrarioTot", async (req, resp) => {
-   const cognome = req.body.cognome.trim();
-   //const tokenMail = req.headers.token.trim();
 
-   // confronto sessionStorage
+   const cognome = req.body.cognome.trim();
    console.log("cognome secondo servizio; " + cognome);
 
    try {
