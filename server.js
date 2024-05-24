@@ -8,6 +8,9 @@ const http = require("http");
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
+const emailer = require('./email.js');
+const jsonEmail = JSON.parse(fs.readFileSync("./mail.json"));
+
 const path = require("path");
 app.use("/", express.static(path.join(__dirname, "public")));
 
@@ -102,7 +105,7 @@ const ottieniOrarioTot = async (cognome) => {
       `;
 
    sql = sql.replace("%1", cognome);
-   
+
    console.log(sql);
 
    try {
@@ -115,9 +118,10 @@ const ottieniOrarioTot = async (cognome) => {
 }
 
 app.post("/ottieniOrarioTot", async (req, resp) => {
-   const cognome = req.headers.cognome
+
+   const cognome = req.body.cognome.trim();
    console.log("cognome secondo servizio; " + cognome);
-   
+
    try {
       const response = await ottieniOrarioTot(cognome);
       resp.json({
@@ -128,6 +132,119 @@ app.post("/ottieniOrarioTot", async (req, resp) => {
       resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
    }
 })
+
+
+app.post("/inviaEmailAdmin", async (req, resp) => {
+   const oggetto = req.body.oggetto;
+   const testo = req.body.testo;
+   try {
+      await emailer.send(
+         jsonEmail,
+         "grandilaura@itis-molinari.eu",
+         oggetto,
+         testo
+      );
+      console.log({ mail: "mail inviata" });
+      resp.json({ result: true });
+   } catch (err) {
+      console.log({ err: err })
+   }
+});
+
+// fare servizio creazione password
+const shortid = require('shortid');
+let generaPW = () => {
+   return shortid.generate();
+}
+
+async function controlloMail (email) {
+   if(email.includes("@itis-molinari.eu")){
+      return true;
+   }
+ }
+ 
+const Registrazione = async (mail) => {
+
+   if (await controlloMail(mail)) {
+      console.log("L'indirizzo email è valido.");
+    } else {
+      console.log("L'indirizzo email non è valido.");
+    }
+
+   let controllo = `SELECT * FROM Utenti 
+   WHERE Nome_Utente = '${mail}'`;
+   // controllo se c'è già utente
+   try {
+      const responseControllo = await executeQuery(controllo, undefined)
+      if (responseControllo.length > 0) {
+         return false; // c'è già
+      } else {
+         const passwordTemp = generaPW();
+         console.log("p " +passwordTemp);
+         let sql = `INSERT INTO Utenti(Nome_Utente, Nome_Password) 
+               VALUES ('${mail}', '${passwordTemp}') `;
+
+
+         const response = await executeQuery(sql, undefined);
+
+         await emailer.send(
+            jsonEmail,
+            mail,
+            `Utente creato con successo`,
+            `Benvenutx nel servizio 'Dov'è'
+             \nQuesta è la tua password: ${passwordTemp}, usala per accedervi.`
+         );
+         return { response: true,
+            token: passwordTemp 
+         }
+      };
+   } catch (err) {
+      console.log(err);
+      return null;
+   }
+}
+
+app.post("/Registrazione", async (req, resp) => {
+   const email = req.body.email;
+   try {
+      const response = await Registrazione(email, undefined);
+      resp.json({
+         result: response,
+      });
+   } catch (error) {
+      console.error("Errore nell'esecuzione della query:", error);
+      resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
+   }
+});
+
+const Accesso = async (mail, pw) => {
+   let controllo = `SELECT * FROM Utenti 
+   WHERE Nome_Utente = '${mail}' AND Nome_Password = '${pw}'`;
+
+   const accedi = await executeQuery(controllo);
+   if (accedi.length > 0) {
+      return { 
+         response: true,
+         token: pw 
+      }
+   }else {
+      return false; // utente mancante, si deve registrare
+   }
+}
+
+app.post("/Accesso", async (req, resp) => {
+   const email = req.body.email;
+   const token = req.body.token;
+   try {
+      const response = await Accesso(email, token);
+      resp.json({
+         result: response,
+      });
+   } catch (error) {
+      console.error("Errore nell'esecuzione della query:", error);
+      resp.status(500).json({ error: "Errore durante l'esecuzione della query" });
+   }
+});
 
 const server = http.createServer(app);
 server.listen(3040, () => {

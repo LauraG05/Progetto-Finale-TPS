@@ -1,0 +1,109 @@
+[33mcommit 9f36bc9de020f161407ff7954a561e7473133546[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Tue May 21 10:26:02 2024 +0200
+
+    --
+
+[33mcommit 5145fa8fd45c8657034d6a83a616c91772e9ee3c[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Tue May 21 10:24:41 2024 +0200
+
+    Revert "Sistemazione titolo (per la disperazione)"
+    
+    This reverts commit c9f7c0d9e3252927b55b6e0e01d1c564b9b30ee3.
+
+[33mcommit c9f7c0d9e3252927b55b6e0e01d1c564b9b30ee3[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Tue May 21 08:25:01 2024 +0200
+
+    Sistemazione titolo (per la disperazione)
+
+[33mcommit 950e10cc82f4c1981ba0c5ed17f958171c149aba[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Tue May 21 08:16:42 2024 +0200
+
+    sistemazione async await fetch servizi
+
+[33mcommit b32fd1bd726e7ab421309eb72553b97cbc0e459a[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Mon May 20 14:23:59 2024 +0200
+
+    filtraggio cognomi sistemato
+
+[33mcommit a93b4a05b940bfc18e6c14d7957f1c7817706f80[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Mon May 20 07:59:45 2024 +0200
+
+    sistemazione modal
+
+[33mcommit b500134b202c015b2337e5474657ab3e11348df1[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Sun May 19 02:16:39 2024 +0200
+
+    query da risolvere
+
+[33mcommit 76f4e33509e44bb08fe8fe53b0ad2123d2867402[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Sat May 18 22:58:25 2024 +0200
+
+    executeQuery
+
+[33mcommit 2e912859aa09b137f99b590e1c5fe351bb625d5c[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Thu May 16 23:13:38 2024 +0200
+
+    query????
+
+[33mcommit c07950a182910c71e45c367baee5637c178e3358[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Thu May 16 20:27:18 2024 +0200
+
+    ...
+
+[33mcommit f10c2634e83b9811251593e6d949af3ddf1cc9fd[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Tue May 14 08:55:19 2024 +0200
+
+    Aggiornamento Server
+
+[33mcommit fa37d98d8396ed7ad1fca291b0a207a616689401[m
+Author: LauraG05 <grandilaura@itis-molinari.eu>
+Date:   Mon May 13 10:33:52 2024 +0200
+
+    push
+
+[33mcommit 3dc1b6e62e75b1035bea9e999b4a0de74535bb5f[m
+Author: LauraG05 <148048419+LauraG05@users.noreply.github.com>
+Date:   Sat May 4 09:06:32 2024 +0000
+
+    Suddivisione cartella
+
+[33mcommit a88ec218c0a9c93af33da66906a18b73f9f49919[m
+Author: LauraG05 <148048419+LauraG05@users.noreply.github.com>
+Date:   Sat May 4 08:21:39 2024 +0000
+
+    Asset aggiunti
+
+[33mcommit bbdd00f05e398695fac25934e0eecac5abf0a3c6[m
+Author: LauraG05 <148048419+LauraG05@users.noreply.github.com>
+Date:   Fri May 3 03:49:17 2024 +0000
+
+    Aggiornamento documentazione
+
+[33mcommit fa89f3d2b9ac0f1ad837c415539c170bf803b9c9[m
+Author: LauraG05 <148048419+LauraG05@users.noreply.github.com>
+Date:   Mon Apr 29 07:44:26 2024 +0000
+
+    merge
+
+[33mcommit 4dddea70161a5c0bcd4dd16aabf2b0db161bab4c[m
+Author: LauraG05 <148048419+LauraG05@users.noreply.github.com>
+Date:   Mon Apr 29 07:42:26 2024 +0000
+
+    Merge
+
+[33mcommit 17851de436e02fc0218648417f5669d5227e65f4[m
+Author: LauraG05 <148048419+LauraG05@users.noreply.github.com>
+Date:   Mon Apr 29 01:47:51 2024 +0200
+
+    Initial commit
