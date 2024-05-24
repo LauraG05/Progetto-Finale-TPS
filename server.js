@@ -115,7 +115,7 @@ const ottieniOrarioTot = async (cognome) => {
 }
 
 app.post("/ottieniOrarioTot", async (req, resp) => {
-   const cognome = req.body.cognome.trim();
+   const cognome = req.headers.cognome
    console.log("cognome secondo servizio; " + cognome);
    
    try {
